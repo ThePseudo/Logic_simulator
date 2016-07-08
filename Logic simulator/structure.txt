@@ -1,0 +1,11 @@
+NAME full_adder
+//Commento 1
+//Commento 2 sono bello 
+//Commento 3 a caso
+INPUTS 3
+NETS 4
+OUTPUTS 2
+cose schifose
+Cose orrende 2
+
+GATES
