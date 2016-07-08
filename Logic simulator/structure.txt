@@ -1,11 +1,13 @@
 NAME full_adder
-//Commento 1
-//Commento 2 sono bello 
-//Commento 3 a caso
 INPUTS 3
 NETS 4
-OUTPUTS 2
-cose schifose
-Cose orrende 2
+OUTPUTS 2 //Number of outputs
 
 GATES
+
+XOR2 U0 I0, I1, N0
+XOR2 U1 N0, I2, O0
+AND2 U2 N0, I2, N1
+AND2 U3 I0, I1, N2
+OR2 U4 N1, N2, N3
+FLIPFLOP F1 N3, O1

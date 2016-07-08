@@ -2,6 +2,7 @@
 
 Circuit::Circuit()
 {
+	errorFound = false;
 	sStructureFile = new string;
 	sInputsFile = new string;
 	sOutputFile = new string;
@@ -43,22 +44,16 @@ void Circuit::readData()
 			inputFile >> buffer;
 			++(* nCurrentLine);
 		}
-		if (!declarationsRead)
+		if(declarationsRead)
+		{
+			readGates(buffer, inputFile);
+		}
+		else if (!declarationsRead)
 		{
 			declarationsRead = readDeclarations(inputFile, buffer);
 		}
 	}
 	inputFile.close();
-}
-
-bool Circuit::isComment(string word)
-{
-	bool isComment = false;
-	if (word.substr(0, 2) == "//")
-	{
-		isComment = true;
-	}
-	return isComment;
 }
 
 bool Circuit::readDeclarations(ifstream & fin, string declaration)
@@ -87,13 +82,80 @@ bool Circuit::readDeclarations(ifstream & fin, string declaration)
 	}
 	else
 	{
+		errorFound = true;
 		printf("Line %u: unknown declaration: %s\n", *nCurrentLine, declaration.c_str());
 		getline(fin, declaration);
 	}
 	return declarationsRead;
 }
 
-void Circuit::readGates()
+void Circuit::readGates(string gate, ifstream & fin)
 {
+	uint16_t gateType = gateTypes::UNVALID;
+	uint16_t numberOfInputs;
+	if("NOT" == gate.substr(0, 3))
+	{
+		gateType = gateTypes::NOT;
+		numberOfInputs = 1;
+	}
+	else if ("AND" == gate.substr(0, 3))
+	{
+		gateType = gateTypes::AND;
+		numberOfInputs = intFromString(gate.substr(3, gate.size()-1), 2);
+	}
+	else if ("OR" == gate.substr(0, 2))
+	{
+		gateType = gateTypes::OR;
+		numberOfInputs = intFromString(gate.substr(2, gate.size() - 1), 2);
+	}
+	else if ("XOR" == gate.substr(0, 3))
+	{
+		gateType = gateTypes::XOR;
+		numberOfInputs = intFromString(gate.substr(3, gate.size() - 1), 2);
+	}
+	else if ("NAND" == gate.substr(0, 4))
+	{
+		gateType = gateTypes::NAND;
+		numberOfInputs = intFromString(gate.substr(4, gate.size() - 1), 2);
+	}
+	else if ("NOR" == gate.substr(0, 3))
+	{
+		gateType = gateTypes::NOR;
+		numberOfInputs = intFromString(gate.substr(3, gate.size() - 1), 2);
+	}
+	else if ("XNOR" == gate.substr(0, 4))
+	{
+		gateType = gateTypes::XNOR;
+		numberOfInputs = intFromString(gate.substr(4, gate.size() - 1), 2);
+	}
+	else
+	{
+		printf("Line %u: unknown gate: %s\n", *nCurrentLine, gate.c_str());
+	}
+}
 
+bool Circuit::isComment(string word)
+{
+	bool isComment = false;
+	if (word.substr(0, 2) == "//")
+	{
+		isComment = true;
+	}
+	return isComment;
+}
+
+int32_t Circuit::intFromString(string number, int32_t error)
+{
+	if (!number.empty())
+	{
+		for (int i = 0; i < number.size(); ++i)
+		{
+			if (!isdigit(number.at(i)))
+			{
+				return error;
+			}
+		}
+		return atoi(number.c_str());
+	}
+	return error;
 }
