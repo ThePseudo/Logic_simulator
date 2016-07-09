@@ -15,7 +15,7 @@ public:
 	void readData();
 	void calculate();
 private:
-	bool errorFound;
+	bool *errorFound;
 	string * _sStructureFile;
 	string * _sInputsFile;
 	string * _sOutputFile;
@@ -30,7 +30,8 @@ private:
 	void readGates(string gate, ifstream & fin);
 	void sort();
 
-	bool isComment(const string word);
-	int32_t intFromString(const string number, const int32_t error = 0);
+	bool isComment(const string word) const;
+	bool isLineComment(string word);
+	int32_t intFromString(const string number, const int32_t error = 0) const;
 };
 

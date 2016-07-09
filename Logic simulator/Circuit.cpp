@@ -2,7 +2,8 @@
 
 Circuit::Circuit()
 {
-	errorFound = false;
+	errorFound = new bool;
+	*errorFound = false;
 	_sStructureFile = new string;
 	_sInputsFile = new string;
 	_sOutputFile = new string;
@@ -15,10 +16,14 @@ Circuit::Circuit()
 	* _sStructureFile = "structure.txt";
 	* _sInputsFile = "inputs.txt";
 	* _sOutputFile = "output.txt";
+	* _nInputs = 0;
+	* _nNets = 0;
+	* _nOutputs = 0;
 }
 
 Circuit::~Circuit()
 {
+	delete errorFound;
 	delete _sStructureFile;
 	delete _sInputsFile;
 	delete _sOutputFile;
@@ -45,7 +50,7 @@ void Circuit::readData()
 		{
 			getline(inputFile, buffer);
 			inputFile >> buffer;
-			++(* _nCurrentLine);
+			++(*_nCurrentLine);
 		}
 		if(declarationsRead)
 		{
@@ -64,7 +69,7 @@ bool Circuit::readDeclarations(ifstream & fin, string declaration)
 	bool declarationsRead = false;
 	if ("NAME" == declaration)
 	{
-		getline(fin, declaration);
+		fin >> declaration;
 	}
 	else if ("INPUTS" == declaration)
 	{
@@ -85,10 +90,17 @@ bool Circuit::readDeclarations(ifstream & fin, string declaration)
 	}
 	else
 	{
-		errorFound = true;
+		*errorFound = true;
 		printf("%u line: unknown declaration of %s\n", *_nCurrentLine, declaration.c_str());
 		getline(fin, declaration);
 	}
+	getline(fin, declaration);
+	if (!isLineComment(declaration))
+	{
+		*errorFound = true;
+		printf("%u line: unexpected syntax: %s\n", *_nCurrentLine, declaration.c_str());
+	}
+
 	return declarationsRead;
 }
 
@@ -133,7 +145,7 @@ void Circuit::readGates(string gate, ifstream & fin)
 	}
 	else
 	{
-		errorFound = true;
+		*errorFound = true;
 		printf("%u line: unknown gate type: %s\n", *_nCurrentLine, gate.c_str());
 		getline(fin, gate);
 		return;
@@ -149,7 +161,7 @@ void Circuit::readGates(string gate, ifstream & fin)
 		{
 			if (gateType > * _nNets)
 			{
-				errorFound = true;
+				*errorFound = true;
 				printf("%u line: input net not valid: %s%u\n", *_nCurrentLine, gate.c_str(), gateType);
 				getline(fin, gate);
 				return;
@@ -163,7 +175,7 @@ void Circuit::readGates(string gate, ifstream & fin)
 		{
 			if (gateType > * _nInputs)
 			{
-				errorFound = true;
+				*errorFound = true;
 				printf("%u line: input not valid: %s%u\n", *_nCurrentLine, gate.c_str(), gateType);
 				getline(fin, gate);
 				return;
@@ -175,7 +187,7 @@ void Circuit::readGates(string gate, ifstream & fin)
 		}
 		else
 		{
-			errorFound = true;
+			*errorFound = true;
 			printf("%u line: input not valid: %s%u\n", *_nCurrentLine, gate.c_str(), gateType);
 			getline(fin, gate);
 			return;
@@ -188,7 +200,7 @@ void Circuit::readGates(string gate, ifstream & fin)
 	{
 		if (gateType > * _nNets)
 		{
-			errorFound = true;
+			*errorFound = true;
 			printf("%u line: output net not valid: %s%u\n", *_nCurrentLine, gate.c_str(), gateType);
 			getline(fin, gate);
 			return;
@@ -202,7 +214,7 @@ void Circuit::readGates(string gate, ifstream & fin)
 	{
 		if (gateType > * _nOutputs)
 		{
-			errorFound = true;
+			*errorFound = true;
 			printf("%u line: output not valid: %s%u\n", *_nCurrentLine, gate.c_str(), gateType);
 			getline(fin, gate);
 			return;
@@ -214,24 +226,30 @@ void Circuit::readGates(string gate, ifstream & fin)
 	}
 	else
 	{
-		errorFound = true;
+		*errorFound = true;
 		printf("%u line: output not valid: %s%u\n", *_nCurrentLine, gate.c_str(), gateType);
 		getline(fin, gate);
 		return;
 	}
 	_vGates->push_back(tempGate);
+	getline(fin, gate);
+	if (!isLineComment(gate))
+	{
+		*errorFound = true;
+		printf("%u line: unexpected syntax: %s\n", *_nCurrentLine, gate.c_str());
+	}
 }
 
 void Circuit::calculate()
 {
-	if (errorFound)
+	if (*errorFound)
 	{
 		printf("Your outputs will not be calculated\n");
 		system("pause");
 	}
 }
 
-bool Circuit::isComment(string word)
+bool Circuit::isComment(string word) const
 {
 	bool isComment = false;
 	if (word.substr(0, 2) == "//")
@@ -241,7 +259,36 @@ bool Circuit::isComment(string word)
 	return isComment;
 }
 
-int32_t Circuit::intFromString(string number, int32_t error)
+bool Circuit::isLineComment(string word)
+{
+	bool comment = false;
+	for (size_t i = 0; i < word.size(); ++i)
+	{
+		if (' ' == word.at(i))
+		{
+			word = word.substr(1, word.size());
+			--i;
+		}
+		else
+		{
+			i = word.size() + 1;
+		}
+	}
+	if (!word.empty())
+	{
+		if (isComment(word))
+		{
+			comment = true;
+		}
+	}
+	else
+	{
+		comment = true;
+	}
+	return comment;
+}
+
+int32_t Circuit::intFromString(string number, int32_t error) const
 {
 	if (!number.empty())
 	{

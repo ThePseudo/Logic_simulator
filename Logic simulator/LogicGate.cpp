@@ -58,7 +58,7 @@ void LogicGate::addInput(int8_t *input)
 }
 
 //calculating functions
-int8_t LogicGate::calculateAnd()
+int8_t LogicGate::calculateAnd() const
 {
 	const int8_t result = 1;
 	for (uint32_t i = 0; i<_vInputs.size(); ++i)
@@ -79,7 +79,7 @@ int8_t LogicGate::calculateAnd()
 	return result;
 }
 
-int8_t LogicGate::calculateOr()
+int8_t LogicGate::calculateOr() const
 {
 	const int8_t result = 0;
 	for (uint32_t i = 0; i<_vInputs.size(); ++i)
@@ -100,7 +100,7 @@ int8_t LogicGate::calculateOr()
 	return result;
 }
 
-int8_t LogicGate::calculateNot()
+int8_t LogicGate::calculateNot() const
 {
 	const int8_t in = *_vInputs.at(0);
 	if (in == 0 || in == 1)
@@ -117,7 +117,7 @@ int8_t LogicGate::calculateNot()
 	return -1;
 }
 
-int8_t LogicGate::calculateXor()
+int8_t LogicGate::calculateXor() const
 {
 	uint8_t ct = 0;
 	for (uint32_t i = 0; i<_vInputs.size(); ++i)
@@ -142,7 +142,7 @@ int8_t LogicGate::calculateXor()
 	}
 }
 
-int8_t LogicGate::calculateNand()
+int8_t LogicGate::calculateNand() const
 {
 	const int8_t result = 0;
 	for (uint32_t i = 0; i<_vInputs.size(); ++i)
@@ -163,7 +163,7 @@ int8_t LogicGate::calculateNand()
 	return result;
 }
 
-int8_t LogicGate::calculateNor()
+int8_t LogicGate::calculateNor() const
 {
 	const int8_t result = 1;
 	for (uint32_t i = 0; i<_vInputs.size(); ++i)
@@ -184,7 +184,7 @@ int8_t LogicGate::calculateNor()
 	return result;
 }
 
-int8_t LogicGate::calculateXnor()
+int8_t LogicGate::calculateXnor() const
 {
 	uint8_t ct = 0;
 	for (uint32_t i = 0; i<_vInputs.size(); ++i)

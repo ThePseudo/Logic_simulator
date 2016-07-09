@@ -2,12 +2,10 @@ NAME full_adder
 INPUTS 3
 NETS 3
 OUTPUTS 2 //Number of outputs
-Schifezza 1
 
 GATES
 
-XOR2 U0 I0, I1, N0 fa schifo
-Questa riga è orrenda!
+XOR2 U0 I0, I1, N0 //prova
 XOR2 U1 N0, I2, O0
 AND2 U2 N0, I2, N1
 AND2 U3 I0, I1, N2
