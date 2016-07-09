@@ -250,6 +250,45 @@ void Circuit::calculate()
 		return;
 	}
 	sort();
+	ifstream inputsFile(_sInputsFile->c_str());
+	ofstream outputFile(_sOutputFile->c_str());
+	int16_t buffer;
+	while (inputsFile >> buffer)
+	{
+		if (buffer > 1)
+		{
+			buffer = 1;
+		}
+		else if (buffer < 0)
+		{
+			buffer = 0;
+		}
+		_vData->at(0) = static_cast<uint8_t>(buffer);
+		for (uint32_t i = 1; i < *_nInputs; ++i)
+		{
+			inputsFile >> buffer;
+			if (buffer > 1)
+			{
+				buffer = 1;
+			}
+			else if (buffer < 0)
+			{
+				buffer = 0;
+			}
+			_vData->at(i) = static_cast<int8_t>(buffer);
+		}
+		for (size_t i = 0; i < _vGates->size(); ++i)
+		{
+			_vGates->at(i).setOutput();
+		}
+		for (size_t i = (*_nInputs + *_nNets); i < _vData->size(); ++i)
+		{
+			outputFile << static_cast<int16_t>(_vData->at(i)) << " ";
+		}
+		outputFile << endl;
+	}
+	outputFile.close();
+	inputsFile.close();
 }
 
 void Circuit::sort() //Basically, if a not already computable net is detected, this routine swaps it with the gate that should be calculated before
