@@ -72,7 +72,7 @@ The last simulation will have the inputs set as "0 1 1"
 
 ---------------------------------------
 
-5 Credits
+5 Credits (alphabetical order)
 
 Beatrice Bussolino
 Andrea Calabrese
