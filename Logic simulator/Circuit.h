@@ -1,12 +1,11 @@
 #pragma once
 #include <iostream>
 #include <cstdio>
-#include <vector>
 #include <fstream>
+#include <vector>
 #include <string>
+#include "LogicGate.h"
 using namespace std;
-
-enum gateTypes{AND, OR, XOR, NOT, NAND, NOR, XNOR, UNVALID};
 
 class Circuit
 {
@@ -14,21 +13,24 @@ public:
 	Circuit();
 	~Circuit();
 	void readData();
+	void calculate();
 private:
 	bool errorFound;
-	string * sStructureFile;
-	string * sInputsFile;
-	string * sOutputFile;
-	vector<int8_t> * vData;
-	uint32_t * nCurrentLine;
-	uint32_t * nInputs;
-	uint32_t * nNets;
-	uint32_t * nOutputs;
-	//helping functions
+	string * _sStructureFile;
+	string * _sInputsFile;
+	string * _sOutputFile;
+	vector<int8_t> * _vData;
+	vector<LogicGate> * _vGates;
+	uint32_t * _nCurrentLine;
+	uint32_t * _nInputs;
+	uint32_t * _nNets;
+	uint32_t * _nOutputs;
+
 	bool readDeclarations(ifstream & fin, string declaration);
 	void readGates(string gate, ifstream & fin);
+	void sort();
 
-	bool isComment(string word);
-	int32_t intFromString(string number, int32_t error);
+	bool isComment(const string word);
+	int32_t intFromString(const string number, const int32_t error = 0);
 };
 

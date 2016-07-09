@@ -21,9 +21,15 @@
     <ClCompile Include="Circuit.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
+    <ClCompile Include="LogicGate.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Circuit.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="LogicGate.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
   </ItemGroup>
