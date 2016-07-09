@@ -34,4 +34,3 @@ private:
 	bool isLineComment(string word);
 	int32_t intFromString(const string number, const int32_t error = 0) const;
 };
-

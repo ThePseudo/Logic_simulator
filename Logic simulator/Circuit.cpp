@@ -232,6 +232,7 @@ void Circuit::readGates(string gate, ifstream & fin)
 		return;
 	}
 	_vGates->push_back(tempGate);
+	gate = "";
 	getline(fin, gate);
 	if (!isLineComment(gate))
 	{
@@ -246,6 +247,35 @@ void Circuit::calculate()
 	{
 		printf("Your outputs will not be calculated\n");
 		system("pause");
+		return;
+	}
+	sort();
+}
+
+void Circuit::sort() //Basically, if a not already computable net is detected, this routine swaps it with the gate that should be calculated before
+{
+	bool swapped = false;
+	for (size_t i = 0; i < _vGates->size(); ++i)
+	{
+		if (swapped)
+		{
+			i = i - 1;
+			swapped = false;
+		}
+		for (uint32_t j = 0; j < _vGates->at(i).inputSize(); ++j)
+		{
+			for (size_t k = i+1; k < _vGates->size(); ++k)
+			{
+				if (_vGates->at(k).output() == _vGates->at(i).getInput(j))
+				{
+					LogicGate tempGate = _vGates->at(i);
+					_vGates->at(i) = _vGates->at(k);
+					_vGates->at(k) = tempGate;
+					k = _vGates->size() + 1;
+					swapped = true;
+				}
+			}
+		}
 	}
 }
 
@@ -292,7 +322,7 @@ int32_t Circuit::intFromString(string number, int32_t error) const
 {
 	if (!number.empty())
 	{
-		for (int i = 0; i < number.size(); ++i)
+		for (uint32_t i = 0; i < number.size(); ++i)
 		{
 			if (!isdigit(number.at(i)))
 			{

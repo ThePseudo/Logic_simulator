@@ -6,22 +6,7 @@ LogicGate::LogicGate(uint32_t type)
 	_dOutput = NULL;
 }
 
-LogicGate::LogicGate()
-{
-
-}
-
-void LogicGate::output(int8_t *output)
-{
-	_dOutput = output;
-}
-
-int8_t *LogicGate::output() const
-{
-	return _dOutput;
-}
-
-int8_t LogicGate::calculate()
+int8_t LogicGate::calculate() const
 {
 	{
 		switch (_nType)
@@ -50,11 +35,6 @@ int8_t LogicGate::calculate()
 		}
 	}
 	return -1;
-}
-
-void LogicGate::addInput(int8_t *input)
-{
-	_vInputs.push_back(input);
 }
 
 //calculating functions
@@ -207,9 +187,4 @@ int8_t LogicGate::calculateXnor() const
 	{
 		return 0;
 	}
-}
-
-void LogicGate::setOutput()
-{
-	*_dOutput = calculate();
 }

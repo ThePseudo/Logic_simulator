@@ -9,12 +9,15 @@ class LogicGate
 {
 public:
 	LogicGate(uint32_t type);
-	LogicGate();
-	int8_t calculate();
-	int8_t *output() const;
-	void output(int8_t *output);
-	void setOutput();
-	void addInput(int8_t *input);
+	LogicGate() {};
+
+	inline int8_t * getInput(uint32_t i) const { return _vInputs.at(i); };
+	inline size_t inputSize() const { return _vInputs.size(); };
+	inline int8_t *output() const { return _dOutput; };
+	inline void output(int8_t *output) { _dOutput = output; };
+	inline void setOutput() { *_dOutput = calculate(); };
+	inline void addInput(int8_t *input) {_vInputs.push_back(input); };
+	int8_t calculate() const;
 private:
 	vector<int8_t *> _vInputs;
 	int32_t _nType;
