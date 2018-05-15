@@ -2,55 +2,35 @@
 
 Circuit::Circuit()
 {
-	errorFound = new bool;
-	*errorFound = false;
-	_sStructureFile = new string;
-	_sInputsFile = new string;
-	_sOutputFile = new string;
-	_nCurrentLine = new uint32_t;
-	_nInputs = new uint32_t;
-	_nNets = new uint32_t;
-	_nOutputs = new uint32_t;
-	_vData = new vector<int8_t>;
-	_vGates = new vector<LogicGate>;
-	* _sStructureFile = "structure.txt";
-	* _sInputsFile = "inputs.txt";
-	* _sOutputFile = "output.txt";
-	* _nInputs = 0;
-	* _nNets = 0;
-	* _nOutputs = 0;
+	 _sStructureFile = "structure.txt";
+	 _sInputsFile = "inputs.txt";
+	 _sOutputFile = "output.txt";
+	 _nInputs = 0;
+	 _nNets = 0;
+	 _nOutputs = 0;
 }
 
 Circuit::~Circuit()
 {
-	delete errorFound;
-	delete _sStructureFile;
-	delete _sInputsFile;
-	delete _sOutputFile;
-	delete _nCurrentLine;
-	delete _nInputs;
-	delete _nNets;
-	delete _nOutputs;
-	_vData->resize(0);
-	delete _vData;
-	_vGates->resize(0);
-	delete _vGates;
+
+	_vData.resize(0);
+	_vGates.resize(0);
 }
 
 void Circuit::readData()
 {
-	* _nCurrentLine = 0;
-	ifstream inputFile(_sStructureFile->c_str());
+	_nCurrentLine = 0;
+	ifstream inputFile(_sStructureFile.c_str());
 	string buffer;
 	bool declarationsRead = false;
 	while (inputFile >> buffer)
 	{
-		++(* _nCurrentLine);
+		++_nCurrentLine;
 		while (isComment(buffer))
 		{
 			getline(inputFile, buffer);
 			inputFile >> buffer;
-			++(*_nCurrentLine);
+			_nCurrentLine;
 		}
 		if(declarationsRead)
 		{
@@ -73,32 +53,32 @@ bool Circuit::readDeclarations(ifstream & fin, string declaration)
 	}
 	else if ("INPUTS" == declaration)
 	{
-		fin >> *_nInputs;
+		fin >> _nInputs;
 	}
 	else if ("NETS" == declaration)
 	{
-		fin >> *_nNets;
+		fin >> _nNets;
 	}
 	else if ("OUTPUTS" == declaration)
 	{
-		fin >> *_nOutputs;
+		fin >> _nOutputs;
 	}
 	else if ("GATES" == declaration)
 	{
 		declarationsRead = true;
-		_vData->resize(*_nOutputs + *_nNets + *_nInputs);
+		_vData.resize(_nOutputs + _nNets + _nInputs);
 	}
 	else
 	{
-		*errorFound = true;
-		printf("%u line: unknown declaration of %s\n", *_nCurrentLine, declaration.c_str());
+		errorFound = true;
+		printf("%u line: unknown declaration of %s\n", _nCurrentLine, declaration.c_str());
 		getline(fin, declaration);
 	}
 	getline(fin, declaration);
 	if (!isLineComment(declaration))
 	{
-		*errorFound = true;
-		printf("%u line: unexpected syntax: %s\n", *_nCurrentLine, declaration.c_str());
+		errorFound = true;
+		printf("%u line: unexpected syntax: %s\n", _nCurrentLine, declaration.c_str());
 	}
 
 	return declarationsRead;
@@ -145,8 +125,8 @@ void Circuit::readGates(string gate, ifstream & fin)
 	}
 	else
 	{
-		*errorFound = true;
-		printf("%u line: unknown gate type: %s\n", *_nCurrentLine, gate.c_str());
+		errorFound = true;
+		printf("%u line: unknown gate type: %s\n", _nCurrentLine, gate.c_str());
 		getline(fin, gate);
 		return;
 	}
@@ -159,36 +139,36 @@ void Circuit::readGates(string gate, ifstream & fin)
 		gate = gate.substr(0, 1);
 		if ("N" == gate)
 		{
-			if (gateType > * _nNets)
+			if (gateType > _nNets)
 			{
-				*errorFound = true;
-				printf("%u line: input net not valid: %s%u\n", *_nCurrentLine, gate.c_str(), gateType);
+				errorFound = true;
+				printf("%u line: input net not valid: %s%u\n", _nCurrentLine, gate.c_str(), gateType);
 				getline(fin, gate);
 				return;
 			}
 			else
 			{
-				tempGate.addInput(&_vData->at(*_nInputs + gateType));
+				tempGate.addInput(&_vData.at(_nInputs + gateType));
 			}
 		}
 		else if ("I" == gate)
 		{
-			if (gateType > * _nInputs)
+			if (gateType > _nInputs)
 			{
-				*errorFound = true;
-				printf("%u line: input not valid: %s%u\n", *_nCurrentLine, gate.c_str(), gateType);
+				errorFound = true;
+				printf("%u line: input not valid: %s%u\n", _nCurrentLine, gate.c_str(), gateType);
 				getline(fin, gate);
 				return;
 			}
 			else
 			{
-				tempGate.addInput(&_vData->at(gateType));
+				tempGate.addInput(&_vData.at(gateType));
 			}
 		}
 		else
 		{
-			*errorFound = true;
-			printf("%u line: input not valid: %s%u\n", *_nCurrentLine, gate.c_str(), gateType);
+			errorFound = true;
+			printf("%u line: input not valid: %s%u\n", _nCurrentLine, gate.c_str(), gateType);
 			getline(fin, gate);
 			return;
 		}
@@ -198,60 +178,60 @@ void Circuit::readGates(string gate, ifstream & fin)
 	gate = gate.substr(0, 1);
 	if ("N" == gate)
 	{
-		if (gateType > * _nNets)
+		if (gateType > _nNets)
 		{
-			*errorFound = true;
-			printf("%u line: output net not valid: %s%u\n", *_nCurrentLine, gate.c_str(), gateType);
+			errorFound = true;
+			printf("%u line: output net not valid: %s%u\n", _nCurrentLine, gate.c_str(), gateType);
 			getline(fin, gate);
 			return;
 		}
 		else
 		{
-			tempGate.output(&_vData->at(*_nInputs + gateType));
+			tempGate.output(&_vData.at(_nInputs + gateType));
 		}
 	}
 	else if ("O" == gate)
 	{
-		if (gateType > * _nOutputs)
+		if (gateType > _nOutputs)
 		{
-			*errorFound = true;
-			printf("%u line: output not valid: %s%u\n", *_nCurrentLine, gate.c_str(), gateType);
+			errorFound = true;
+			printf("%u line: output not valid: %s%u\n", _nCurrentLine, gate.c_str(), gateType);
 			getline(fin, gate);
 			return;
 		}
 		else
 		{
-			tempGate.output(&_vData->at(*_nInputs + *_nNets + gateType));
+			tempGate.output(&_vData.at(_nInputs + _nNets + gateType));
 		}
 	}
 	else
 	{
-		*errorFound = true;
-		printf("%u line: output not valid: %s%u\n", *_nCurrentLine, gate.c_str(), gateType);
+		errorFound = true;
+		printf("%u line: output not valid: %s%u\n", _nCurrentLine, gate.c_str(), gateType);
 		getline(fin, gate);
 		return;
 	}
-	_vGates->push_back(tempGate);
+	_vGates.push_back(tempGate);
 	gate = "";
 	getline(fin, gate);
 	if (!isLineComment(gate))
 	{
-		*errorFound = true;
-		printf("%u line: unexpected syntax: %s\n", *_nCurrentLine, gate.c_str());
+		errorFound = true;
+		printf("%u line: unexpected syntax: %s\n", _nCurrentLine, gate.c_str());
 	}
 }
 
 void Circuit::calculate()
 {
-	if (*errorFound)
+	if (errorFound)
 	{
 		printf("Your outputs will not be calculated\n");
 		system("pause");
 		return;
 	}
 	sort();
-	ifstream inputsFile(_sInputsFile->c_str());
-	ofstream outputFile(_sOutputFile->c_str());
+	ifstream inputsFile(_sInputsFile.c_str());
+	ofstream outputFile(_sOutputFile.c_str());
 	int16_t buffer;
 	while (inputsFile >> buffer)
 	{
@@ -263,8 +243,8 @@ void Circuit::calculate()
 		{
 			buffer = 0;
 		}
-		_vData->at(0) = static_cast<uint8_t>(buffer);
-		for (uint32_t i = 1; i < *_nInputs; ++i)
+		_vData.at(0) = static_cast<uint8_t>(buffer);
+		for (uint32_t i = 1; i < _nInputs; ++i)
 		{
 			inputsFile >> buffer;
 			if (buffer > 1)
@@ -275,15 +255,15 @@ void Circuit::calculate()
 			{
 				buffer = 0;
 			}
-			_vData->at(i) = static_cast<int8_t>(buffer);
+			_vData.at(i) = static_cast<int8_t>(buffer);
 		}
-		for (size_t i = 0; i < _vGates->size(); ++i)
+		for (size_t i = 0; i < _vGates.size(); ++i)
 		{
-			_vGates->at(i).setOutput();
+			_vGates.at(i).setOutput();
 		}
-		for (size_t i = (*_nInputs + *_nNets); i < _vData->size(); ++i)
+		for (size_t i = (_nInputs + _nNets); i < _vData.size(); ++i)
 		{
-			outputFile << static_cast<int16_t>(_vData->at(i)) << " ";
+			outputFile << static_cast<int16_t>(_vData.at(i)) << " ";
 		}
 		outputFile << endl;
 	}
@@ -294,23 +274,23 @@ void Circuit::calculate()
 void Circuit::sort() //Basically, if a not already computable net is detected, this routine swaps it with the gate that should be calculated before
 {
 	bool swapped = false;
-	for (size_t i = 0; i < _vGates->size(); ++i)
+	for (size_t i = 0; i < _vGates.size(); ++i)
 	{
 		if (swapped)
 		{
 			i = i - 1;
 			swapped = false;
 		}
-		for (uint32_t j = 0; j < _vGates->at(i).inputSize(); ++j)
+		for (uint32_t j = 0; j < _vGates.at(i).inputSize(); ++j)
 		{
-			for (size_t k = i+1; k < _vGates->size(); ++k)
+			for (size_t k = i+1; k < _vGates.size(); ++k)
 			{
-				if (_vGates->at(k).output() == _vGates->at(i).getInput(j))
+				if (_vGates.at(k).output() == _vGates.at(i).getInput(j))
 				{
-					LogicGate tempGate = _vGates->at(i);
-					_vGates->at(i) = _vGates->at(k);
-					_vGates->at(k) = tempGate;
-					k = _vGates->size() + 1;
+					LogicGate tempGate = _vGates.at(i);
+					_vGates.at(i) = _vGates.at(k);
+					_vGates.at(k) = tempGate;
+					k = _vGates.size() + 1;
 					swapped = true;
 				}
 			}

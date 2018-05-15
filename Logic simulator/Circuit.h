@@ -15,16 +15,16 @@ public:
 	void readData();
 	void calculate();
 private:
-	bool *errorFound;
-	string * _sStructureFile;
-	string * _sInputsFile;
-	string * _sOutputFile;
-	vector<int8_t> * _vData;
-	vector<LogicGate> * _vGates;
-	uint32_t * _nCurrentLine;
-	uint32_t * _nInputs;
-	uint32_t * _nNets;
-	uint32_t * _nOutputs;
+	bool errorFound;
+	string _sStructureFile;
+	string _sInputsFile;
+	string _sOutputFile;
+	vector<int8_t> _vData;
+	vector<LogicGate> _vGates;
+	uint32_t _nCurrentLine;
+	uint32_t _nInputs;
+	uint32_t _nNets;
+	uint32_t _nOutputs;
 
 	bool readDeclarations(ifstream & fin, string declaration);
 	void readGates(string gate, ifstream & fin);
