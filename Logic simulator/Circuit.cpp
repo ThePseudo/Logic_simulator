@@ -132,6 +132,7 @@ void Circuit::readGates(string gate, ifstream & fin)
 	}
 	LogicGate tempGate(gateType);
 	fin >> gate;
+	tempGate.name(gate);
 	for (uint32_t i = 0; i < numberOfInputs; ++i)
 	{
 		fin >> gate;

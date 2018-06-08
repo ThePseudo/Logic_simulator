@@ -16,12 +16,16 @@ public:
 	inline int8_t *output() const { return _dOutput; };
 	inline void output(int8_t *output) { _dOutput = output; };
 	inline void setOutput() { *_dOutput = calculate(); };
+	inline void name(string name) { _name = name; }
+	inline string name() { return _name; }
 	inline void addInput(int8_t *input) {_vInputs.push_back(input); };
 	int8_t calculate() const;
 private:
 	vector<int8_t *> _vInputs;
 	int32_t _nType;
 	int8_t *_dOutput;
+	string _name;
+
 	int8_t calculateAnd() const;
 	int8_t calculateOr() const;
 	int8_t calculateNot() const;
